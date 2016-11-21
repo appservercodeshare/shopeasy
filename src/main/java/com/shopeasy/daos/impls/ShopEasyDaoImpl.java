@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import com.shopeasy.daos.AbstractCurdDao;
 import com.shopeasy.daos.ShopEasyDao;
@@ -14,6 +16,8 @@ import com.shopeasy.persistences.beans.RegistrationBean;
 import com.shopeasy.persistences.beans.UserBean;
 import com.shopeasy.utils.Utils;
 
+@Repository
+@Qualifier(value = "shopEasyDao")
 public class ShopEasyDaoImpl extends AbstractCurdDao implements ShopEasyDao {
 
 	@Override

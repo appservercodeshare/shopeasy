@@ -1,7 +1,13 @@
 package com.shopeasy.persistences.beans;
 
-public class LoginBean {
+import java.io.Serializable;
 
+public class LoginBean implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3865350877301961569L;
+	
 	private String username;
 	private String password;
 
