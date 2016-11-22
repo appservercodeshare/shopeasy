@@ -2,15 +2,19 @@ package com.shopeasy.services.impls;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.shopeasy.constants.StatusConstants;
 import com.shopeasy.daos.ShopEasyDao;
+import com.shopeasy.jms.services.OtpService;
 import com.shopeasy.persistences.beans.LoginBean;
 import com.shopeasy.persistences.beans.RegistrationBean;
 import com.shopeasy.persistences.beans.UserBean;
 import com.shopeasy.services.ShopEasyService;
+import com.shopeasy.utils.Utils;
 
 @Service
 @Qualifier(value = "shopEasyService")
@@ -27,12 +31,54 @@ public class ShopEasyServiceImpl implements ShopEasyService {
 
 	@Override
 	public Integer registerMobileNumber(RegistrationBean registrationBean) {
-		return shopEasyDao.registerMobileNumber(registrationBean);
+		Integer newOTP = OtpService.getNewOTP(1000, 9999);
+		
+		RegistrationBean dbRegistrationBean = null;
+		try {
+			dbRegistrationBean = shopEasyDao.getMobileNumber(registrationBean);
+			if(Utils.isEmptyOrNull(dbRegistrationBean)) {
+				registrationBean.setOtp(newOTP);
+				shopEasyDao.registerMobileNumber(registrationBean);
+			} else {
+				BeanUtils.copyProperties(registrationBean, dbRegistrationBean);
+				registrationBean.setOtp(0);
+			}
+		} catch (Exception e) {
+			registrationBean.setOtp(-1);
+		}
+		return newOTP;
 	}
 
 	@Override
-	public boolean signup(UserBean userBean) {
-		return shopEasyDao.signup(userBean);
+	public StatusConstants signup(UserBean userBean) {
+		
+		RegistrationBean dbRegistrationBean = null;
+		StatusConstants statusConstant = null;
+		
+		try {
+
+			RegistrationBean registrationBean = new RegistrationBean();
+			registrationBean.setMobileNumber(userBean.getMobileNumber());
+			registrationBean.setOtp(userBean.getOtp());
+			dbRegistrationBean = shopEasyDao.getRegisteredMobileDetails(registrationBean);
+			
+			if(!Utils.isEmptyOrNull(dbRegistrationBean)) {
+				UserBean dbUserBean = shopEasyDao.getUserByMobileNumber(userBean);
+				if(Utils.isEmptyOrNull(dbUserBean)) {
+					shopEasyDao.signup(userBean);
+					statusConstant = StatusConstants.DB_OPERATION_SUCCESS;
+				} else {
+					statusConstant = StatusConstants.DUPLICATE_SIGNUP;
+				}
+			} else {
+				statusConstant = StatusConstants.INVALID_OTP;
+			}
+		} catch (Exception e) {
+			statusConstant = StatusConstants.DB_OPERATION_FAILED;
+			e.printStackTrace();
+		}
+		
+		return statusConstant;
 	}
 
 }

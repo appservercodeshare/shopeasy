@@ -2,6 +2,7 @@ package com.shopeasy.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class ShopEasyController {
 	private ShopEasyService shopEasyService;
 	
 	@RequestMapping(value = "/login", method = {RequestMethod.POST})
-	public User login(Login login) {
+	public User login(@RequestBody Login login) {
 		
 		User user = Utils.getUser(shopEasyService.login(Utils.getLoginBean(login)));
 		
@@ -34,28 +35,30 @@ public class ShopEasyController {
 		return user;
 	}
 	
-	@RequestMapping(value = "/register", method = {RequestMethod.POST})
-	public Registration register(Registration registration) {
+	@RequestMapping(value = "/register", method = {RequestMethod.POST}, consumes="application/json", produces = "application/json")
+	public Registration register(@RequestBody Registration registration) {
 		
 		Integer otp = shopEasyService.registerMobileNumber(Utils.getRegistrationBean(registration));
 		if(otp > -1) {
-			registration.setStatus(StatusConstants.REGISTRATION_SUCCESS.getStatusCode());	
+			registration.setOtp(otp);
+			registration.setStatus(StatusConstants.REGISTRATION_SUCCESS.getStatusCode());
 		} else {
 			registration.setStatus(StatusConstants.REGISTRATION_FAILED.getStatusCode());
+			registration.setOtp(-1);
 		}
 		
 		return registration;
 	}
 	
 	@RequestMapping(value = "/signup", method = {RequestMethod.POST})
-	public User signup(User user) {
+	public User signup(@RequestBody User user) {
 		
-		boolean flag = shopEasyService.signup(Utils.getUserBean(user));
+		StatusConstants statusConstant = shopEasyService.signup(Utils.getUserBean(user));
 		
-		if(flag) {
+		if(statusConstant.equals(StatusConstants.DB_OPERATION_SUCCESS)) {
 			user.setStatus(StatusConstants.SIGNUP_SUCCESS.getStatusCode());
 		} else {
-			user.setStatus(StatusConstants.REGISTRATION_FAILED.getStatusCode());	
+			user.setStatus(StatusConstants.SIGNUP_FAILED.getStatusCode());	
 		}
 		
 		return user;

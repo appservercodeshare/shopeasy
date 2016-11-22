@@ -1,11 +1,6 @@
-/*package com.shopeasy.configs;
+package com.shopeasy.configs;
 
 import java.util.Properties;
-
-
-
-
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +37,7 @@ public class AppConfig {
 		
 		sessionFactory.setDataSource(dataSource());
 		sessionFactory.setHibernateProperties(hibernateProperties());
-		sessionFactory.setPackagesToScan(new String[]{"com.spring.persistence.beans"});
+		sessionFactory.setPackagesToScan(new String[]{"com.shopeasy.persistences.beans"});
 		
 		return sessionFactory;
 	}
@@ -50,7 +45,7 @@ public class AppConfig {
 	@Bean(name = "dataSource")
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driver.class.name"));
+		dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driverClassName"));
 		dataSource.setUrl(env.getRequiredProperty("jdbc.url"));
 		dataSource.setUsername(env.getRequiredProperty("jdbc.username"));
 		dataSource.setPassword(env.getRequiredProperty("jdbc.password"));
@@ -66,4 +61,3 @@ public class AppConfig {
 		return properties;
 	}
 }
-*/

@@ -6,7 +6,10 @@ import com.shopeasy.persistences.beans.UserBean;
 
 public interface ShopEasyDao {
 	public UserBean login(LoginBean  loginBean);
-	public Integer registerMobileNumber(RegistrationBean registrationBean);
+	public void registerMobileNumber(RegistrationBean registrationBean);
+	public RegistrationBean getRegisteredMobileDetails(RegistrationBean registrationBean);
+	public RegistrationBean getMobileNumber(RegistrationBean registrationBean);
 	public boolean signup(UserBean userBean);
+	public UserBean getUserByMobileNumber(UserBean userBean);
 	
 }
