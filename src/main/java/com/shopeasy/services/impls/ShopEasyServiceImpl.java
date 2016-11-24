@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.shopeasy.constants.StatusConstants;
+import com.shopeasy.controllers.beans.Registration;
 import com.shopeasy.daos.ShopEasyDao;
 import com.shopeasy.jms.services.OtpService;
 import com.shopeasy.persistences.beans.LoginBean;
@@ -30,23 +31,31 @@ public class ShopEasyServiceImpl implements ShopEasyService {
 	}
 
 	@Override
-	public Integer registerMobileNumber(RegistrationBean registrationBean) {
+	public StatusConstants registerMobileNumber(RegistrationBean registrationBean, Registration registration) {
 		Integer newOTP = OtpService.getNewOTP(1000, 9999);
+		StatusConstants statusConstant = null;
 		
 		RegistrationBean dbRegistrationBean = null;
 		try {
-			dbRegistrationBean = shopEasyDao.getMobileNumber(registrationBean);
+			dbRegistrationBean = shopEasyDao.getRegistrationBeanByMobileNumber(registrationBean);
 			if(Utils.isEmptyOrNull(dbRegistrationBean)) {
 				registrationBean.setOtp(newOTP);
 				shopEasyDao.registerMobileNumber(registrationBean);
+				statusConstant = StatusConstants.REGISTRATION_SUCCESS;
 			} else {
-				BeanUtils.copyProperties(registrationBean, dbRegistrationBean);
-				registrationBean.setOtp(0);
+				statusConstant = StatusConstants.DUPLICATE_REGISTRATION;
 			}
 		} catch (Exception e) {
-			registrationBean.setOtp(-1);
+			statusConstant = StatusConstants.DB_OPERATION_FAILED;
+			newOTP = null;
 		}
-		return newOTP;
+		
+		if(!Utils.isEmptyOrNull(registration)) {
+			registration.setOtp(newOTP);
+			registration.setStatus(statusConstant.getStatusCode());
+			registration.setStatusDescription(statusConstant.getDescription());
+		}
+		return statusConstant;
 	}
 
 	@Override
@@ -70,7 +79,9 @@ public class ShopEasyServiceImpl implements ShopEasyService {
 				} else {
 					statusConstant = StatusConstants.DUPLICATE_SIGNUP;
 				}
-			} else {
+			} else if (Utils.isEmptyOrNull(shopEasyDao.getRegistrationBeanByMobileNumber(registrationBean))) {
+					statusConstant = StatusConstants.UNREGISTERED_MOBILE_NUMBER;
+			} else { 
 				statusConstant = StatusConstants.INVALID_OTP;
 			}
 		} catch (Exception e) {

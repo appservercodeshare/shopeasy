@@ -11,6 +11,7 @@ import com.shopeasy.constants.StatusConstants;
 import com.shopeasy.controllers.beans.Login;
 import com.shopeasy.controllers.beans.Registration;
 import com.shopeasy.controllers.beans.User;
+import com.shopeasy.persistences.beans.UserBean;
 import com.shopeasy.services.ShopEasyService;
 import com.shopeasy.utils.Utils;
 
@@ -24,29 +25,25 @@ public class ShopEasyController {
 	@RequestMapping(value = "/login", method = {RequestMethod.POST})
 	public User login(@RequestBody Login login) {
 		
-		User user = Utils.getUser(shopEasyService.login(Utils.getLoginBean(login)));
-		
-		if(Utils.isEmptyOrNull(user)) {
-			user.setStatus(StatusConstants.INVALID_LOGIN.getStatusCode());
+		User user = null;
+		UserBean userBean = shopEasyService.login(Utils.getLoginBean(login));
+		if(!Utils.isEmptyOrNull(userBean)) {
+			user = Utils.getUser(userBean);
+			user.setStatus(StatusConstants.VALID_LOGIN.getStatusCode());
+			user.setStatusDescription(StatusConstants.VALID_LOGIN.getDescription());
 		} else {
-			user.setStatus(StatusConstants.VALID_LOGIN.getStatusCode());	
+			user = new User();
+			user.setUsername(login.getUsername());
+			user.setPassword(login.getPassword());
+			user.setStatus(StatusConstants.INVALID_LOGIN.getStatusCode());
+			user.setStatusDescription(StatusConstants.INVALID_LOGIN.getDescription());
 		}
-		
 		return user;
 	}
 	
 	@RequestMapping(value = "/register", method = {RequestMethod.POST}, consumes="application/json", produces = "application/json")
 	public Registration register(@RequestBody Registration registration) {
-		
-		Integer otp = shopEasyService.registerMobileNumber(Utils.getRegistrationBean(registration));
-		if(otp > -1) {
-			registration.setOtp(otp);
-			registration.setStatus(StatusConstants.REGISTRATION_SUCCESS.getStatusCode());
-		} else {
-			registration.setStatus(StatusConstants.REGISTRATION_FAILED.getStatusCode());
-			registration.setOtp(-1);
-		}
-		
+		shopEasyService.registerMobileNumber(Utils.getRegistrationBean(registration), registration);
 		return registration;
 	}
 	
@@ -55,12 +52,8 @@ public class ShopEasyController {
 		
 		StatusConstants statusConstant = shopEasyService.signup(Utils.getUserBean(user));
 		
-		if(statusConstant.equals(StatusConstants.DB_OPERATION_SUCCESS)) {
-			user.setStatus(StatusConstants.SIGNUP_SUCCESS.getStatusCode());
-		} else {
-			user.setStatus(StatusConstants.SIGNUP_FAILED.getStatusCode());	
-		}
-		
+		user.setStatus(statusConstant.getStatusCode());
+		user.setStatusDescription(statusConstant.getDescription());
 		return user;
 	}
 }

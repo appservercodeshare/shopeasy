@@ -4,10 +4,11 @@ public enum StatusConstants {
 
 	INVALID_LOGIN(601, "601", "Login Failed"), 
 	SIGNUP_FAILED(602, "602", "Signup Failed"), 
-	REGISTRATION_FAILED(603, "603", "Registration Failed"),
+	DUPLICATE_REGISTRATION(603, "603", "Duplicate Registration"),
 	INVALID_OTP(604, "604", "Invalid Otp"),
 	DB_OPERATION_FAILED(605, "605", "DB Operation Failed"),
-	DUPLICATE_SIGNUP(605, "605", "Duplicate Signup"), 
+	DUPLICATE_SIGNUP(605, "605", "Duplicate Signup"),
+	UNREGISTERED_MOBILE_NUMBER(606, "606", "Wrong Mobile Number"),
 	VALID_LOGIN(701, "701", "Valid Login"), 
 	SIGNUP_SUCCESS(702, "701", "Signup is Successful"), 
 	REGISTRATION_SUCCESS(703, "703", "Registration is Successful"),

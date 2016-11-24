@@ -41,7 +41,7 @@ public class UserBean implements Serializable {
 	@Column(name = "LOCALITY")
 	private String locality;
 	
-	@Column(name = "OTP")
+	@Transient
 	private Integer otp;
 
 	public Long getUserId() {

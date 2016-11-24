@@ -27,8 +27,8 @@ public class ShopEasyDaoImpl extends AbstractCurdDao implements ShopEasyDao {
 		Criteria loginQuery = session.createCriteria(UserBean.class);
 		loginQuery.add(Restrictions.eq("username", loginBean.getUsername()));
 		loginQuery.add(Restrictions.eq("password", loginBean.getPassword()));
-		UserBean dbUserBean = (UserBean) loginQuery.uniqueResult(); 
-		return dbUserBean;
+		List<UserBean> userBeanList = loginQuery.list();
+		return (!userBeanList.isEmpty())?userBeanList.get(0):null; 
 	}
 
 	@Override
@@ -61,12 +61,26 @@ public class ShopEasyDaoImpl extends AbstractCurdDao implements ShopEasyDao {
 	}
 	
 	@Override
-	public RegistrationBean getMobileNumber(RegistrationBean registrationBean) {
+	public RegistrationBean getRegistrationBeanByMobileNumber(RegistrationBean registrationBean) {
 		
 		Session session = getSession();
 		RegistrationBean dbRegistrationBean = null;
 		Criteria registerMobQuery = session.createCriteria(RegistrationBean.class);
 		registerMobQuery.add(Restrictions.eq("mobileNumber", registrationBean.getMobileNumber()));
+		List<RegistrationBean> registrationBeanList = registerMobQuery.list();
+		if(!registrationBeanList.isEmpty()) {
+			dbRegistrationBean = registrationBeanList.get(0);
+		}
+		return dbRegistrationBean;
+	}
+	
+	@Override
+	public RegistrationBean getRegistrationBeanByOtp(RegistrationBean registrationBean) {
+		
+		Session session = getSession();
+		RegistrationBean dbRegistrationBean = null;
+		Criteria registerMobQuery = session.createCriteria(RegistrationBean.class);
+		registerMobQuery.add(Restrictions.eq("otp", registrationBean.getOtp()));
 		List<RegistrationBean> registrationBeanList = registerMobQuery.list();
 		if(!registrationBeanList.isEmpty()) {
 			dbRegistrationBean = registrationBeanList.get(0);

@@ -9,6 +9,7 @@ public class User {
 	private String mobileNumber;
 	private String locality;
 	private String status;
+	private String statusDescription;
 	private Integer otp;
 
 	public String getUsername() {
@@ -67,6 +68,13 @@ public class User {
 		this.status = status;
 	}
 	
+	public String getStatusDescription() {
+		return statusDescription;
+	}
+
+	public void setStatusDescription(String statusDescription) {
+		this.statusDescription = statusDescription;
+	}
 
 	public Integer getOtp() {
 		return otp;
@@ -78,10 +86,10 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", password=" + password 
-				+ ", repassword=" + repassword + ", email=" + email + 
-				", mobileNumber=" + mobileNumber + ", locality=" + locality 
-				+ ", status=" + status + ", otp=" + otp + "]";
+		return "User [username=" + username + ", password=" + password + ", repassword="
+				+ repassword + ", email=" + email + ", mobileNumber=" + mobileNumber 
+				+ ", locality=" + locality + ", status=" + status
+				+ ", statusDescription=" + statusDescription + ", otp=" + otp + "]";
 	}
 
 }
