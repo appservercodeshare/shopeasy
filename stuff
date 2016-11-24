@@ -1,0 +1,75 @@
+Registration 
+ Successful.
+   Request: {"mobileNumber":"9019220626"}
+   Response: {"mobileNumber":"9019220626","status":"703","otp":7971,"statusDescription":"Registration is Successful"}
+   
+  Duplicate:
+  Request: {"mobileNumber":"9019220626"}
+  Response: {"mobileNumber":"9019220626","status":"603","otp":7155,"statusDescription":"Duplicate Registration"}
+  
+Signup
+ Successful
+  Request: 
+  {"username":"Salman","password":"aaaa","repassword":"aaaa","email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas",	"otp":"7971"}
+  
+  Response: {"username":"Salman","password":"aaaa","repassword":"aaaa","email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas","status":"704","statusDescription":"DB Operation is Successful","otp":7971}
+ 
+ 
+  Invalid Otp:
+   Request
+    {"username":"Salman","password":"aaaa","repassword":"aaaa","email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas",	"otp":"7972"}
+   
+   Response:    	{"username":"Salman","password":"aaaa","repassword":"aaaa","email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas","status":"604","statusDescription":"Invalid Otp","otp":7972}
+ 
+  Duplicate:
+   Request:
+    {"username":"Salman","password":"aaaa","repassword":"aaaa","email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas", "otp":"7971"}
+   
+   Response:        {"username":"Salman","password":"aaaa","repassword":"aaaa","email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas","status":"605","statusDescription":"Duplicate Signup","otp":7971}
+  
+  
+Login:
+ Successful
+   Request:
+   {"username":"Salman","password":"aaaa"} 
+   
+   Response: {"username":"Salman","password":"aaaa","repassword":null,"email":"salman@gmail.com","mobileNumber":"9019220626","locality":"sdasdasdas","status":"701","statusDescription":"Valid Login","otp":null}   
+
+  Login Failed:
+
+   Request: Invalid username
+    {"username":"Salman1","password":"aaaa"} 
+	
+   Response:
+    {"username":"Salman1","password":"aaaa","repassword":null,"email":null,"mobileNumber":null,"locality":null,"status":"601","statusDescription":"Login Failed","otp":null}  
+
+	
+   Request: Invalid Passoword
+    {"username":"Salman1","password":"aaaa"} 
+	
+   Response:
+    {"username":"Salman","password":"aaab","repassword":null,"email":null,"mobileNumber":null,"locality":null,"status":"601","statusDescription":"Login Failed","otp":null}  
+  
+	
+
+Hibernate: 
+    drop table if exists REGISTRATIONS
+Hibernate: 
+    drop table if exists USERS
+Hibernate: 
+    create table REGISTRATIONS (
+        REGISTRATION_ID bigint not null auto_increment,
+        MOBIBLE_NUMBER varchar(255),
+        OTP integer,
+        primary key (REGISTRATION_ID)
+    )
+Hibernate: 
+    create table USERS (
+        USER_ID bigint not null auto_increment,
+        EMAIL varchar(255),
+        LOCALITY varchar(255),
+        MOBILE_NUMBER varchar(255),
+        PASSWORD varchar(255),
+        USER_NAME varchar(255),
+        primary key (USER_ID)
+    )
