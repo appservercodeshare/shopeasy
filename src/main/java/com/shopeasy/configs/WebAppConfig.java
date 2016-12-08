@@ -1,41 +1,38 @@
 package com.shopeasy.configs;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
+import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.shopeasy.controllers", "com.shopeasy.daos", "com.shopeasy.services", "com.shopeasy.persistences"})
+@ComponentScan(basePackages = {"com.shopeasy.controllers"})
 @EnableTransactionManagement
-@PropertySource(value = {"classpath:dbConfig.properties"})
-public class WebAppConfig {
-
+public class WebAppConfig  {
 	
-	/*@Bean(name = "messageConverters")
-	public RequestMappingHandlerAdapter messageConverters() {
-		RequestMappingHandlerAdapter requestMappingHandlerAdapter = 
-		new RequestMappingHandlerAdapter();
+	@Bean(name = "viewResolver")
+	public UrlBasedViewResolver viewResolver() {
 		
-		List<?> list = new ArrayList<MappingJackson2HttpMessageConverter>();
-		list.add(jsonMessageConverter());
-		requestMappingHandlerAdapter.setMessageConverters();
+		UrlBasedViewResolver viewResolver = new UrlBasedViewResolver();
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix("/WEB-INF/views/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
 	}
 	
-	@Bean(name = "jsonMessageConverter")
-	public MappingJackson2HttpMessageConverter jsonMessageConverter() {
-		MappingJackson2HttpMessageConverter jsonMessageConverter = 
-		new	MappingJackson2HttpMessageConverter();
-		return jsonMessageConverter;
-	} */
-	
+	/*
+	 * It is required for uploading functionality
+	 */
+	@Bean(name = "multipartResolver")
+	public CommonsMultipartResolver multipartResolver() {
+		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+		return multipartResolver;
+	}
+
 }
