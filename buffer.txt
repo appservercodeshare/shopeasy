@@ -1,0 +1,173 @@
+package com.shopeasy.uploads;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Component;
+
+import com.shopeasy.controllers.beans.Category;
+import com.shopeasy.controllers.beans.Product;
+import com.shopeasy.controllers.beans.SubCategory;
+
+import static com.shopeasy.utils.Utils.close;
+import static com.shopeasy.utils.Utils.isEmptyOrNull;
+
+@Component
+public class UploadedFileOperation {
+
+	public static void main(String[] args) {
+		UploadedFileOperation uploadedFileOperation = new UploadedFileOperation();
+		File file = new File("C:/Users/farhanm/Desktop/shopeasy.xls"); 
+		Set<Category> categoriesSet = uploadedFileOperation.proccessUploadedFile(file);
+		System.out.println(categoriesSet);
+	}
+	
+	
+	public Set<Category> proccessUploadedFile(File file) {
+		
+		BufferedInputStream bufIn = null;
+		Workbook workbook = null;
+		Set<Category> categoriesSet = new LinkedHashSet<Category>();
+		
+		try {
+			
+			Category category = null;
+			SubCategory subCategory = null;
+			Product product = null;
+			
+			bufIn = new BufferedInputStream(
+				new FileInputStream(file));
+			
+			workbook = new XSSFWorkbook(bufIn);
+			
+			Sheet sheet = workbook.getSheetAt(0);
+			
+			Iterator<Row> rowIter = sheet.rowIterator();
+			
+			if(rowIter.hasNext()) {rowIter.next();}
+			
+			while(rowIter.hasNext()) {
+				
+				Row currentRow = rowIter.next();
+				
+				if(!categoriesSet.isEmpty()) {
+					
+					category = null;
+					subCategory = null;
+					for(Category categoryVar : categoriesSet) {
+						if(categoryVar.getCategoryName().equalsIgnoreCase(currentRow.getCell(0).getStringCellValue())) {
+							category = categoryVar;
+							break;
+						}
+					}
+					
+					if(!isEmptyOrNull(category)) {
+						
+						for(SubCategory subCategoryTemp : category.getSubCategorySet()) {
+							if(subCategoryTemp.getSubCategoryName().equalsIgnoreCase(currentRow.getCell(1).getStringCellValue())) {
+								subCategory = subCategoryTemp;
+								break;
+							}
+						}
+						
+						if(!isEmptyOrNull(subCategory)) {
+							
+							product = new Product();
+							subCategory.getProductSet().add(product);
+							
+							product.setSubCategory(subCategory);
+							product.setProductBrand(currentRow.getCell(2).getStringCellValue());
+							product.setProductName(currentRow.getCell(3).getStringCellValue());
+							product.setPrice(currentRow.getCell(4).getNumericCellValue());
+							product.setQuantity(new Double(currentRow.getCell(5).getNumericCellValue()).intValue());
+							product.setMrp(currentRow.getCell(6).getNumericCellValue());
+							product.setMeasureMentUnit(currentRow.getCell(7).getStringCellValue());
+							product.setHasType(currentRow.getCell(8).getBooleanCellValue());
+							product.setImages(currentRow.getCell(9).getStringCellValue());
+							
+							
+						} else {// subCategory is null or empty
+							
+							subCategory = new SubCategory();
+							category.getSubCategorySet().add(subCategory);
+							product = new Product();
+							
+							subCategory.setSubCategoryName(currentRow.getCell(1).getStringCellValue());
+							subCategory.setCategory(category);
+							subCategory.getProductSet().add(product);
+							
+							
+							product.setSubCategory(subCategory);
+							product.setProductBrand(currentRow.getCell(2).getStringCellValue());
+							product.setProductName(currentRow.getCell(3).getStringCellValue());
+							product.setPrice(currentRow.getCell(4).getNumericCellValue());
+							product.setQuantity(new Double(currentRow.getCell(5).getNumericCellValue()).intValue());
+							product.setMrp(currentRow.getCell(6).getNumericCellValue());
+							product.setMeasureMentUnit(currentRow.getCell(7).getStringCellValue());
+							product.setHasType(currentRow.getCell(8).getBooleanCellValue());
+							product.setImages(currentRow.getCell(9).getStringCellValue());
+							
+							category.getSubCategorySet().add(subCategory);
+						}
+						
+					} else {// category is null or empty
+						categoriesSet.add(createCategory(currentRow));
+					}
+				} else { // categoriesSet is null or empty
+					categoriesSet.add(createCategory(currentRow));
+				}
+				
+				
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		} finally {
+			
+			try {
+				close(bufIn);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return categoriesSet;
+	}
+	
+	
+	public Category createCategory(Row currentRow) {
+		
+		Category category = new Category();
+		category.setCategoryName(currentRow.getCell(0).getStringCellValue());
+		SubCategory subCategory = new SubCategory();
+		category.getSubCategorySet().add(subCategory);
+		Product product = new Product();
+		
+		subCategory.setSubCategoryName(currentRow.getCell(1).getStringCellValue());
+		subCategory.setCategory(category);
+		subCategory.getProductSet().add(product);
+		
+		
+		product.setSubCategory(subCategory);
+		product.setProductBrand(currentRow.getCell(2).getStringCellValue());
+		product.setProductName(currentRow.getCell(3).getStringCellValue());
+		product.setPrice(currentRow.getCell(4).getNumericCellValue());
+		product.setQuantity(new Double(currentRow.getCell(5).getNumericCellValue()).intValue());
+		product.setMrp(currentRow.getCell(6).getNumericCellValue());
+		product.setMeasureMentUnit(currentRow.getCell(7).getStringCellValue());
+		product.setHasType(currentRow.getCell(8).getBooleanCellValue());
+		product.setImages(currentRow.getCell(9).getStringCellValue());
+		
+		category.getSubCategorySet().add(subCategory);
+		return category;
+	}
+}
