@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
+import com.shopeasy.constants.ProductUploadColumns;
 import com.shopeasy.controllers.beans.Category;
 import com.shopeasy.controllers.beans.Product;
 import com.shopeasy.controllers.beans.SubCategory;
@@ -25,9 +26,9 @@ public class UploadedFileOperation {
 
 	public static void main(String[] args) {
 		UploadedFileOperation uploadedFileOperation = new UploadedFileOperation();
-		File file = new File("C:/Users/farhanm/Desktop/shopeasy.xls"); 
+		File file = new File("C:/Users/Acer/Desktop/CategoryList.xlsx"); 
 		Set<Category> categoriesSet = uploadedFileOperation.proccessUploadedFile(file);
-		System.out.println(categoriesSet);
+		uploadedFileOperation.showCategories(categoriesSet);
 	}
 	
 	
@@ -63,7 +64,7 @@ public class UploadedFileOperation {
 					category = null;
 					subCategory = null;
 					for(Category categoryVar : categoriesSet) {
-						if(categoryVar.getCategoryName().equalsIgnoreCase(currentRow.getCell(0).getStringCellValue())) {
+						if(categoryVar.getCategoryName().equalsIgnoreCase(currentRow.getCell(ProductUploadColumns.CATEGORY.getColumnNumber()).getStringCellValue())) {
 							category = categoryVar;
 							break;
 						}
@@ -72,7 +73,7 @@ public class UploadedFileOperation {
 					if(!isEmptyOrNull(category)) {
 						
 						for(SubCategory subCategoryTemp : category.getSubCategorySet()) {
-							if(subCategoryTemp.getSubCategoryName().equalsIgnoreCase(currentRow.getCell(1).getStringCellValue())) {
+							if(subCategoryTemp.getSubCategoryName().equalsIgnoreCase(currentRow.getCell(ProductUploadColumns.SUB_CATEGORY.getColumnNumber()).getStringCellValue())) {
 								subCategory = subCategoryTemp;
 								break;
 							}
@@ -84,14 +85,15 @@ public class UploadedFileOperation {
 							subCategory.getProductSet().add(product);
 							
 							product.setSubCategory(subCategory);
-							product.setProductBrand(currentRow.getCell(2).getStringCellValue());
-							product.setProductName(currentRow.getCell(3).getStringCellValue());
-							product.setPrice(currentRow.getCell(4).getNumericCellValue());
-							product.setQuantity(new Double(currentRow.getCell(5).getNumericCellValue()).intValue());
-							product.setMrp(currentRow.getCell(6).getNumericCellValue());
-							product.setMeasureMentUnit(currentRow.getCell(7).getStringCellValue());
-							product.setHasType(currentRow.getCell(8).getBooleanCellValue());
-							product.setImages(currentRow.getCell(9).getStringCellValue());
+							product.setProductName(currentRow.getCell(ProductUploadColumns.PRODUCT_NAME.getColumnNumber()).getStringCellValue());
+							product.setPrice(currentRow.getCell(ProductUploadColumns.PRICE.getColumnNumber()).getNumericCellValue());
+							product.setMaxUnit(new Double(currentRow.getCell(ProductUploadColumns.MAX_UNIT.getColumnNumber()).getNumericCellValue()).intValue());
+							product.setMinUnit(new Double(currentRow.getCell(ProductUploadColumns.MIN_UNIT.getColumnNumber()).getNumericCellValue()).intValue());
+							product.setMrp(currentRow.getCell(ProductUploadColumns.MAX_PRICE_LIMIT.getColumnNumber()).getNumericCellValue());
+							product.setMeasurementInUnit(currentRow.getCell(ProductUploadColumns.MEASURMENT_UNIT.getColumnNumber()).getStringCellValue());
+							product.setHasType(currentRow.getCell(ProductUploadColumns.HAS_TYPE.getColumnNumber()).getBooleanCellValue());
+							product.setImage(currentRow.getCell(ProductUploadColumns.IMAGE.getColumnNumber()).getStringCellValue());
+							
 							
 							
 						} else {// subCategory is null or empty
@@ -100,20 +102,21 @@ public class UploadedFileOperation {
 							category.getSubCategorySet().add(subCategory);
 							product = new Product();
 							
-							subCategory.setSubCategoryName(currentRow.getCell(1).getStringCellValue());
+							subCategory.setSubCategoryName(currentRow.getCell(ProductUploadColumns.SUB_CATEGORY.getColumnNumber()).getStringCellValue());
 							subCategory.setCategory(category);
 							subCategory.getProductSet().add(product);
 							
 							
 							product.setSubCategory(subCategory);
-							product.setProductBrand(currentRow.getCell(2).getStringCellValue());
-							product.setProductName(currentRow.getCell(3).getStringCellValue());
-							product.setPrice(currentRow.getCell(4).getNumericCellValue());
-							product.setQuantity(new Double(currentRow.getCell(5).getNumericCellValue()).intValue());
-							product.setMrp(currentRow.getCell(6).getNumericCellValue());
-							product.setMeasureMentUnit(currentRow.getCell(7).getStringCellValue());
-							product.setHasType(currentRow.getCell(8).getBooleanCellValue());
-							product.setImages(currentRow.getCell(9).getStringCellValue());
+							product.setProductName(currentRow.getCell(ProductUploadColumns.PRODUCT_NAME.getColumnNumber()).getStringCellValue());
+							product.setPrice(currentRow.getCell(ProductUploadColumns.PRICE.getColumnNumber()).getNumericCellValue());
+							product.setMaxUnit(new Double(currentRow.getCell(ProductUploadColumns.MAX_UNIT.getColumnNumber()).getNumericCellValue()).intValue());
+							product.setMinUnit(new Double(currentRow.getCell(ProductUploadColumns.MIN_UNIT.getColumnNumber()).getNumericCellValue()).intValue());
+							product.setMrp(currentRow.getCell(ProductUploadColumns.MAX_PRICE_LIMIT.getColumnNumber()).getNumericCellValue());
+							product.setMeasurementInUnit(currentRow.getCell(ProductUploadColumns.MEASURMENT_UNIT.getColumnNumber()).getStringCellValue());
+							product.setHasType(currentRow.getCell(ProductUploadColumns.HAS_TYPE.getColumnNumber()).getBooleanCellValue());
+							product.setImage(currentRow.getCell(ProductUploadColumns.IMAGE.getColumnNumber()).getStringCellValue());
+							
 							
 							category.getSubCategorySet().add(subCategory);
 						}
@@ -158,16 +161,39 @@ public class UploadedFileOperation {
 		
 		
 		product.setSubCategory(subCategory);
-		product.setProductBrand(currentRow.getCell(2).getStringCellValue());
-		product.setProductName(currentRow.getCell(3).getStringCellValue());
-		product.setPrice(currentRow.getCell(4).getNumericCellValue());
-		product.setQuantity(new Double(currentRow.getCell(5).getNumericCellValue()).intValue());
-		product.setMrp(currentRow.getCell(6).getNumericCellValue());
-		product.setMeasureMentUnit(currentRow.getCell(7).getStringCellValue());
-		product.setHasType(currentRow.getCell(8).getBooleanCellValue());
-		product.setImages(currentRow.getCell(9).getStringCellValue());
+		product.setProductName(currentRow.getCell(ProductUploadColumns.PRODUCT_NAME.getColumnNumber()).getStringCellValue());
+		product.setPrice(currentRow.getCell(ProductUploadColumns.PRICE.getColumnNumber()).getNumericCellValue());
+		product.setMaxUnit(new Double(currentRow.getCell(ProductUploadColumns.MAX_UNIT.getColumnNumber()).getNumericCellValue()).intValue());
+		product.setMinUnit(new Double(currentRow.getCell(ProductUploadColumns.MIN_UNIT.getColumnNumber()).getNumericCellValue()).intValue());
+		product.setMrp(currentRow.getCell(ProductUploadColumns.MAX_PRICE_LIMIT.getColumnNumber()).getNumericCellValue());
+		product.setMeasurementInUnit(currentRow.getCell(ProductUploadColumns.MEASURMENT_UNIT.getColumnNumber()).getStringCellValue());
+		product.setHasType(currentRow.getCell(ProductUploadColumns.HAS_TYPE.getColumnNumber()).getBooleanCellValue());
+		product.setImage(currentRow.getCell(ProductUploadColumns.IMAGE.getColumnNumber()).getStringCellValue());
 		
 		category.getSubCategorySet().add(subCategory);
 		return category;
+		
+	}	
+	
+	
+	public void showCategories(Set<Category> categoriesSet) {
+		
+		StringBuffer strBuffer = new StringBuffer();
+		for(Category category : categoriesSet) {
+			for(SubCategory subCategory : category.getSubCategorySet()) {
+				for(Product product : subCategory.getProductSet()) {
+					strBuffer.append(category.getCategoryName()).append("\t")
+					.append(subCategory.getSubCategoryName()).append("\t")
+					.append(product.getProductName()).append("\t").append( product.getPrice())
+					.append("\t").append(product.getImage()).append("\t")
+					.append(product.getMeasurementInUnit()).append("\t")
+					.append(product.getMinUnit()).append("\t").append(product.getMaxUnit())
+					.append(product.getMrp()).append("\t")
+					.append(product.getHasType()).append("\n");
+				}
+			}
+		}
+		
+		System.out.println(strBuffer.toString());
 	}
 }
