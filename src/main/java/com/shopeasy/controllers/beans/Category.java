@@ -28,10 +28,10 @@ public class Category {
 		CategoryName = categoryName;
 	}
 
-	@Override
+	/*@Override
 	public String toString() {
 		return "Category [CategoryName=" + CategoryName + ", subCategorySet=" + subCategorySet + "]";
-	}
+	}*/
 
 	@Override
 	public int hashCode() {
@@ -57,5 +57,4 @@ public class Category {
 			return false;
 		return true;
 	}
-
 }
